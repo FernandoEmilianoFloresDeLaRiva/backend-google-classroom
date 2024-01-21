@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { onConnection } from "./src/handlers/indexHandler.js";
 import db from "./src/config/db.js";
+import indexRouter from "./src/routes/index.router.js";
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ const io = new Server(server, {
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
   },
 });
+
+app.use("/", indexRouter);
 
 app.use("*", (req, res) => {
   res.send("Esta ruta no existe en la API");
