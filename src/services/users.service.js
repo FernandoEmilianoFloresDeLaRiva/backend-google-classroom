@@ -7,11 +7,11 @@ export const getAllUsersService = async () => {
     const response = await userRepository.getAllUsers();
     return response;
   } catch (err) {
-    throw err;
+    throw new Error(err);
   }
 };
 
-export const getUserByEmailService = async ({email}) => {
+export const getUserByEmailService = async ({ email }) => {
   try {
     const response = await userRepository.getUserByEmail(email);
     return response;
@@ -31,9 +31,13 @@ export const createUserService = async (userReq) => {
     const passwordHash = bcrypt.hashSync(userReq.password, saltosBcrypt);
     const response = await userRepository.createUser(name, email, passwordHash);
     const jwt = createJWT(response);
-    return jwt;
+    return {
+      id: response.id,
+      name,
+      token: jwt,
+    };
   } catch (err) {
-    throw err;
+    throw new Error(err);
   }
 };
 
@@ -41,6 +45,7 @@ export const loginUserService = async (userReq) => {
   try {
     const { email, password } = userReq;
     const originalUser = await userRepository.getUserByEmail(email);
+    console.log(originalUser[0]);
     if (originalUser.length) {
       const correctPassword = bcrypt.compareSync(
         password,
@@ -50,12 +55,13 @@ export const loginUserService = async (userReq) => {
         const jwt = createJWT(originalUser[0]);
         return {
           token: jwt,
-          user: originalUser,
+          id: originalUser[0].idUser,
+          name: originalUser[0].name,
         };
       }
     }
-    throw new Error("Credecianles invalidas");
+    throw new Error("Credenciales invalidas");
   } catch (err) {
-    throw err;
+    throw new Error(err);
   }
 };

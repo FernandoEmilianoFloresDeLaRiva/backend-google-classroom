@@ -22,7 +22,11 @@ export const createUser = (name, email, password) => {
   return new Promise((resolve, reject) => {
     const query = "insert into users (name, email, password) values (?,?,?)";
     db.execute(query, [name, email, password])
-      .then((res) => resolve({ name, email, password }))
+      .then((res) => {
+        const arrHeaderResponse = Object.values(res[0])
+        const idInsert = arrHeaderResponse[2]
+        resolve({ id: idInsert, email, password });
+      })
       .catch((err) => reject(err));
   });
 };
