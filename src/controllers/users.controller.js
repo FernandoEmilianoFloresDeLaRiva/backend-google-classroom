@@ -13,8 +13,7 @@ export const getAllUserController = async (req, res) => {
 
 export const getUserByEmailController = async (req, res) => {
   try {
-    const { email } = req.params;
-    const response = await userService.getUserByEmailService(email);
+    const response = await userService.getUserByEmailService(req.body);
     res.status(200).json(response);
   } catch (err) {
     res.status(500).json({

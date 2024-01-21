@@ -22,7 +22,7 @@ export const createUser = (name, email, password) => {
   return new Promise((resolve, reject) => {
     const query = "insert into users (name, email, password) values (?,?,?)";
     db.execute(query, [name, email, password])
-      .then((res) => resolve(res))
+      .then((res) => resolve({ name, email, password }))
       .catch((err) => reject(err));
   });
 };

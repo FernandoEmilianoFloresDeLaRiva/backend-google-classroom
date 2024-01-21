@@ -11,12 +11,12 @@ export const getAllUsersService = async () => {
   }
 };
 
-export const getUserByEmailService = async (email) => {
+export const getUserByEmailService = async ({email}) => {
   try {
     const response = await userRepository.getUserByEmail(email);
     return response;
   } catch (err) {
-    throw err;
+    throw new Error(err);
   }
 };
 
@@ -24,6 +24,10 @@ export const createUserService = async (userReq) => {
   try {
     const saltosBcrypt = parseInt(process.env.SALTOS_BCRYPT) || 10;
     const { name, email } = userReq;
+    const existingUser = await userRepository.getUserByEmail(email);
+    if (existingUser.length) {
+      throw new Error("Email existente");
+    }
     const passwordHash = bcrypt.hashSync(userReq.password, saltosBcrypt);
     const response = await userRepository.createUser(name, email, passwordHash);
     const jwt = createJWT(response);
@@ -37,20 +41,20 @@ export const loginUserService = async (userReq) => {
   try {
     const { email, password } = userReq;
     const originalUser = await userRepository.getUserByEmail(email);
-    if (originalUser) {
+    if (originalUser.length) {
       const correctPassword = bcrypt.compareSync(
         password,
-        originalUser.password
+        originalUser[0].password
       );
       if (correctPassword) {
-        const jwt = createJWT(originalUser);
+        const jwt = createJWT(originalUser[0]);
         return {
           token: jwt,
           user: originalUser,
         };
       }
     }
-    throw new Error("Credecianles invalidas")
+    throw new Error("Credecianles invalidas");
   } catch (err) {
     throw err;
   }
