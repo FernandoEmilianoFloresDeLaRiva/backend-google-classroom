@@ -12,15 +12,29 @@ export const getEnrolledSubjectsController = async (req, res) => {
   }
 };
 
-export const getSubjectByIdController = async (req, res) => {
-  try{
-    const { idSubject } = req.params;
-    const response = await subjectsService.getSubjectByIdService(parseInt(idSubject));
+export const getCreatedSubjectsController = async (req, res) => {
+  try {
+    const { idUser } = req.params;
+    const response = await subjectsService.getCreatedSubjectsService(
+      parseInt(idUser)
+    );
     res.status(200).json(response);
-  }catch (err) {
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
-}
+};
+
+export const getSubjectByIdController = async (req, res) => {
+  try {
+    const { idSubject } = req.params;
+    const response = await subjectsService.getSubjectByIdService(
+      parseInt(idSubject)
+    );
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 export const createSubjectController = async (req, res) => {
   try {

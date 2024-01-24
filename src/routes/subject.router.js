@@ -6,6 +6,7 @@ const subjectRouter = Router();
 subjectRouter
   .get("/:idSubject", subjectController.getSubjectByIdController)
   .get("/student/:idStudent", subjectController.getEnrolledSubjectsController)
+  .get("/teacher/:idUser", subjectController.getCreatedSubjectsController)
   .post("/createSubject", subjectController.createSubjectController)
   .post("/enrolledSubject", subjectController.enrolledSubjectController);
 

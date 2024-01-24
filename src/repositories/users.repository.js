@@ -23,6 +23,7 @@ export const createUser = (name, email, password) => {
     const query = "insert into users (name, email, password) values (?,?,?)";
     db.execute(query, [name, email, password])
       .then((res) => {
+        console.log(name)
         const arrHeaderResponse = Object.values(res[0])
         const idInsert = arrHeaderResponse[2]
         resolve({ id: idInsert, email, password });
