@@ -43,3 +43,17 @@ export const loginUserController = async (req, res) => {
     });
   }
 };
+
+export const getEnrolledUsersBySubjectController = async (req, res) => {
+  try {
+    const { idSubject } = req.params;
+    const response = await userService.getEnrolledUsersBySubjectService(
+      idSubject
+    );
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};

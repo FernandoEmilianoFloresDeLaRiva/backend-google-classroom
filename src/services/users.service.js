@@ -65,3 +65,12 @@ export const loginUserService = async (userReq) => {
     throw new Error(err);
   }
 };
+
+export const getEnrolledUsersBySubjectService = async (idSubject) => {
+  try {
+    const response = await userRepository.getEnrolledUsersBySubject(idSubject);
+    return response;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
