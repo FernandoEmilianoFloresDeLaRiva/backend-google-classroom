@@ -13,7 +13,11 @@ export const getTasksBySubjectIdService = async (subjectId) => {
 export const getPendingTasksByUserIdService = async (userId) => {
   try {
     const res = await taskRepository.getPendingTasksByUserId(userId);
-    return res;
+    const dateCreated = new Date().toDateString()
+    const resFilter = res.filter((task) => {
+      return new Date(task.date)>= new Date(dateCreated);
+    });
+    return resFilter;
   } catch (err) {
     throw new Error(err);
   }
@@ -59,18 +63,29 @@ export const updateTaskStateService = async (idTask) => {
   }
 };
 
-export const checkForUpdates = async (subjectId, currentTasksLength) => {
+export const getInvalidTasksServices = async (userId) => {
+  try {
+    const res = await taskRepository.getInvalidTasks(userId);
+    const resFilter = res.filter((task) => new Date() > new Date(task.date));
+    return resFilter;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export const checkForUpdates = async (userId, currentTasksLength) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const currentTasks = await taskRepository.getTasksBySubjectId(subjectId);
+      const currentTasks = await taskRepository.getPendingTasksByUserId(userId);
+      console.log(currentTasksLength);
       // Compara la longitud del array actual con la longitud anterior
       if (currentTasks.length > currentTasksLength) {
-        resolve(currentTasks);
+        resolve(currentTasks.length);
       } else {
         // Si no hay nuevas tareas, espera y vuelve a verificar después de un tiempo
         setTimeout(async () => {
           const updatedTasks = await checkForUpdates(
-            subjectId,
+            userId,
             currentTasksLength
           );
           resolve(updatedTasks);

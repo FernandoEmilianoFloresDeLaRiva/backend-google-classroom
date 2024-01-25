@@ -60,3 +60,13 @@ export const updateTaskState = (idTask) => {
       .catch((err) => reject(err));
   });
 };
+
+export const getInvalidTasks = (idUser) => {
+  return new Promise((resolve, reject) => {
+    const query =
+      "select w.workName, w.date, w.idWork, s.subjectName from works as w inner join pendings as p on p.idWork = w.idWork inner join subjects as s on s.idSubject = w.idSubject where p.idUser = ? and p.state = false;";
+    db.execute(query, [idUser])
+      .then((res) => resolve(res[0]))
+      .catch((err) => reject(err));
+  });
+};

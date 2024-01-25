@@ -6,8 +6,13 @@ const taskRouter = Router();
 taskRouter
   .get("/:idSubject", taskController.getTasksBySubjectIdController)
   .get("/pending/:idUser", taskController.getPendingTasksByUserIdController)
+  .get(
+    "/pending/count/:idUser",
+    taskController.getCountPendingTasksByUserIdController
+  )
   .get("/fullfiled/:idUser", taskController.getFullFiledTasksByUserIdController)
+  .get("/invalid/task/:idUser", taskController.getInvalidTaskByUserIdController)
   .post("/", taskController.createTaskController)
   .put("/:idTask", taskController.updateTaskStateController);
 
-  export default taskRouter
+export default taskRouter;

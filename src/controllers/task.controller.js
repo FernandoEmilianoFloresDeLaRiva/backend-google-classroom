@@ -1,22 +1,24 @@
 import * as taskService from "../services/task.service.js";
 
-//long pulling
 export const getTasksBySubjectIdController = async (req, res) => {
   try {
     const { idSubject } = req.params;
     const initialTasks = await taskService.getTasksBySubjectIdService(
       idSubject
     );
+    res.status(200).json(initialTasks);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
 
-    // Obtener la longitud inicial de las tareas
-    const initialTasksLength = initialTasks.length;
-
-    const updatedTasks = await taskService.checkForUpdates(
-      idSubject,
-      initialTasksLength
-    );
-
-    res.status(200).json(updatedTasks);
+export const getInvalidTaskByUserIdController = async (req, res) => {
+  try {
+    const { idUser } = req.params;
+    const response = await taskService.getInvalidTasksServices(idUser);
+    res.status(200).json(response);
   } catch (err) {
     res.status(500).json({
       message: err.message,
@@ -29,6 +31,28 @@ export const getPendingTasksByUserIdController = async (req, res) => {
     const { idUser } = req.params;
     const response = await taskService.getPendingTasksByUserIdService(idUser);
     res.status(200).json(response);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
+//long pulling
+export const getCountPendingTasksByUserIdController = async (req, res) => {
+  try {
+    const { idUser } = req.params;
+    const id = parseInt(idUser, 10)
+    const initialTasks = await taskService.getPendingTasksByUserIdService(
+      id
+    );
+    // Obtener la longitud inicial de las tareas
+    const initialTasksLength = initialTasks.length;
+    const updatedTasks = await taskService.checkForUpdates(
+      id,
+      initialTasksLength
+    );
+    res.status(200).json({ count: updatedTasks.length });
   } catch (err) {
     res.status(500).json({
       message: err.message,
