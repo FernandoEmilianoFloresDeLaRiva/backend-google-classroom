@@ -3,7 +3,7 @@ import db from "../config/db.js";
 export const getEnrolledSubjects = (idStudent) => {
   return new Promise((resolve, reject) => {
     const query =
-      "select e.idSubject, s.subjectName, s.idTeacher, s.code, u.name from enrolledsubjects as e inner join subjects as s on e.idSubject = s.idSubject inner join users as u on  u.idUser = e.idStudent where e.idStudent = ? and e.isTeacher = false;";
+      "select e.idSubject, s.subjectName, s.idTeacher, s.code, u.name from enrolledsubjects as e inner join subjects as s on e.idSubject = s.idSubject inner join users as u on u.idUser = s.idTeacher where e.idStudent = ? and e.isTeacher = false;";
     db.execute(query, [idStudent])
       .then((res) => resolve(res[0]))
       .catch((err) => reject(err));
