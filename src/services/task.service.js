@@ -1,6 +1,15 @@
 import * as taskRepository from "../repositories/task.repository.js";
 import { getEnrolledUsersBySubject } from "../repositories/users.repository.js";
 
+export const getTaskService = async (id) => {
+  try {
+    const res = await taskRepository.getTaskById(id);
+    return res;
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
 export const getTasksBySubjectIdService = async (subjectId) => {
   try {
     const res = await taskRepository.getTasksBySubjectId(subjectId);
@@ -13,9 +22,9 @@ export const getTasksBySubjectIdService = async (subjectId) => {
 export const getPendingTasksByUserIdService = async (userId) => {
   try {
     const res = await taskRepository.getPendingTasksByUserId(userId);
-    const dateCreated = new Date().toDateString()
+    const dateCreated = new Date().toDateString();
     const resFilter = res.filter((task) => {
-      return new Date(task.date)>= new Date(dateCreated);
+      return new Date(task.date) >= new Date(dateCreated);
     });
     return resFilter;
   } catch (err) {
@@ -41,14 +50,15 @@ export const createTaskService = async (taskReq) => {
       description,
       date
     );
+    //sacamos id de la tarea recien creada
+    const { id } = res;
     const usersEnrolled = await getEnrolledUsersBySubject(idSubject);
     usersEnrolled.map(async (user) => {
-      const { id } = res;
-      if (!user?.isTeacher)
+      if (!user?.isTeacher){
         await taskRepository.createPendingTask(id, user?.idUser);
+      }
     });
-
-    return res;
+    return id;
   } catch (err) {
     throw new Error(err);
   }
@@ -56,6 +66,7 @@ export const createTaskService = async (taskReq) => {
 
 export const updateTaskStateService = async (idTask) => {
   try {
+    console.log(idTask)
     const res = await taskRepository.updateTaskState(idTask);
     return res;
   } catch (err) {
@@ -71,28 +82,4 @@ export const getInvalidTasksServices = async (userId) => {
   } catch (err) {
     throw new Error(err);
   }
-};
-
-export const checkForUpdates = async (userId, currentTasksLength) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const currentTasks = await taskRepository.getPendingTasksByUserId(userId);
-      console.log(currentTasksLength);
-      // Compara la longitud del array actual con la longitud anterior
-      if (currentTasks.length > currentTasksLength) {
-        resolve(currentTasks.length);
-      } else {
-        // Si no hay nuevas tareas, espera y vuelve a verificar después de un tiempo
-        setTimeout(async () => {
-          const updatedTasks = await checkForUpdates(
-            userId,
-            currentTasksLength
-          );
-          resolve(updatedTasks);
-        }, 5000);
-      }
-    } catch (err) {
-      reject(err);
-    }
-  });
 };

@@ -1,10 +1,8 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
-dotenv.config()
-
-const jwtToken = process.env.JWTSECRET || "1234"
-
+dotenv.config();
+const secret = process.env.JWTSECRET || "Transaccionalidad";
 
 export const createJWT = (user) => {
   const { email, name } = user;
@@ -14,7 +12,7 @@ export const createJWT = (user) => {
       email: email,
     },
   };
-  const token = jwt.sign(payload, jwtToken, { expiresIn: "1h" });
-  console.log(token)
+  const token = jwt.sign(payload, secret, { expiresIn: "1h" });
+  console.log(token);
   return token;
 };

@@ -3,9 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
-import { onConnection } from "./src/handlers/indexHandler.js";
 import db from "./src/config/db.js";
 import indexRouter from "./src/routes/index.router.js";
+import { joinRoomHandler } from "./src/handlers/joinRoom.handler.js";
+import { chatMessageHandler } from "./src/handlers/chatMessage.handler.js";
+import { disconnectHandler } from "./src/handlers/disconnect.handler.js";
+import { verifyJWTSocket } from "./src/middlewares/verifyJwt.socket.js";
 
 dotenv.config();
 
@@ -17,6 +20,7 @@ app.use(express.json());
 app.set("port", process.env.PORT || 4000);
 
 const server = createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -29,6 +33,13 @@ app.use("/", indexRouter);
 app.use("*", (req, res) => {
   res.send("Esta ruta no existe en la API");
 });
+
+const onConnection = (socket) => {
+  console.log("cliente conectado");
+  joinRoomHandler(io, socket);
+  chatMessageHandler(io, socket);
+  disconnectHandler(io, socket);
+};
 
 io.on("connection", onConnection);
 

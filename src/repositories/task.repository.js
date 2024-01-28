@@ -1,5 +1,14 @@
 import db from "../config/db.js";
 
+export const getTaskById = (taskId) => {
+  return new Promise((resolve, reject) => {
+    const query = "select workName, description, date, p.state, u.name from works as w inner join pendings as p on p.idWork = w.idWork inner join subjects as s on w.idSubject = s.idSubject inner join users as u on s.idTeacher = u.idUser where w.idWork = ?";
+    db.execute(query, [taskId])
+      .then((res) => resolve(res[0]))
+      .catch((err) => reject(err));
+  });
+}
+
 export const getTasksBySubjectId = (subjectId) => {
   return new Promise((resolve, reject) => {
     const query = "select * from works where idSubject = ?";
@@ -54,7 +63,7 @@ export const createPendingTask = (idWork, idUser) => {
 
 export const updateTaskState = (idTask) => {
   return new Promise((resolve, reject) => {
-    const query = "update pendings set status = true where idWork = ?";
+    const query = "update pendings set state = true where idWork = ?";
     db.execute(query, [idTask])
       .then((res) => resolve(res))
       .catch((err) => reject(err));
